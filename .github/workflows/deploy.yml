@@ -1,0 +1,32 @@
+name: Deploy to GCP
+
+on:
+  push:
+    branches:
+      - main  # o la rama que deseas usar para despliegues
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '18.12.1'
+
+      - name: Install dependencies
+        run: yarn install
+
+      - name: Build the project
+        run: yarn build  # o el comando que uses para construir tu aplicación
+
+      - name: Deploy to GCP
+        env:
+          GOOGLE_APPLICATION_CREDENTIALS: ${{ secrets.GCP_CREDENTIALS }}
+        run: |
+          gcloud config set project YOUR_PROJECT_ID
+          gcloud builds submit --tag gcr.io/YOUR_PROJECT_ID/YOUR_IMAGE_NAME
